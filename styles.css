@@ -1,0 +1,78 @@
+/* styles.css */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #333;
+  }
+  
+  .container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 800px;
+    max-width: 90%;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .stats {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .stats p {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #555;
+  }
+  
+  .stats span {
+    color: #ff6f61;
+    font-weight: 700;
+  }
+  
+  #text-display {
+    font-size: 1.5em;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap; /* Preserve spaces and line breaks */
+  }
+  
+  .correct {
+    color: #4caf50; /* Green for correct text */
+  }
+  
+  .incorrect {
+    color: #ff6f61; /* Red for incorrect text */
+  }
+  
+  .current {
+    border-right: 2px solid #333; /* Cursor effect */
+    animation: blink 0.7s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% {
+      border-right-color: transparent;
+    }
+    50% {
+      border-right-color: #333;
+    }
+  }
