@@ -1,77 +1,132 @@
-const textToType = document.getElementById('text-to-type');
-const userInput = document.getElementById('user-input');
-const timerDisplay = document.getElementById('timer');
-const speedDisplay = document.getElementById('speed');
-const accuracyDisplay = document.getElementById('accuracy');
+document.addEventListener("DOMContentLoaded", function () {
+  let startTime, timerInterval;
+  const timerDisplay = document.getElementById("timer");
+  const speedDisplay = document.getElementById("speed");
+  const accuracyDisplay = document.getElementById("accuracy");
+  const textDisplay = document.getElementById("text-display");
+  const sampleText =
+    "Peter piper bit a pan of pickled pepper and the quick brown fox jumps over the moon.";
 
-let startTime, timerInterval;
+  textDisplay.innerHTML = sampleText
+    .split("")
+    .map((char) => `<span>${char}</span>`)
+    .join("");
 
-// Sample text for typing
-const sampleText = "The quick brown fox jumps over the lazy dog.";
-textToType.textContent = sampleText;
+  // Track user input
+  let currentIndex = 0;
+  let mistakesCounter = 0;
 
-// Start the test when the user starts typing
-userInput.addEventListener('input', () => {
-  if (!startTime) {
-    startTime = new Date();
-    startTimer();
-  }
-  checkInput();
-});
+  initializeCursor();
+  highlightCurrentCharacter(textDisplay.querySelectorAll("span"));
 
-// Check the user's input against the sample text
-function checkInput() {
-  const typedText = userInput.value;
-  const sampleTextArray = sampleText.split('');
-  let correctChars = 0;
-
-  sampleTextArray.forEach((char, index) => {
-    if (typedText[index] === char) {
-      correctChars++;
+  document.addEventListener("keydown", (event) => {
+    if (!startTime) {
+      startTime = new Date();
+      startTimer();
     }
+
+    // Ignore all other keys that are not Backspace
+    if (event.key.length > 1 && event.key !== "Backspace") return;
+
+    let typedKey = event.key;
+    let expectedChar = sampleText[currentIndex];
+    const spans = textDisplay.querySelectorAll("span");
+
+    // Handle backspace
+    if (event.key === "Backspace") {
+      if (currentIndex > 0) {
+        spans[currentIndex].classList.remove("current");
+        currentIndex--;
+        spans[currentIndex].classList.remove("correct", "incorrect");
+      }
+      highlightCurrentCharacter(spans);
+      return;
+    }
+
+    // To prevent overflow
+    if (currentIndex >= sampleText.length) return;
+
+    // Typed key and expected character comparison
+    if (typedKey === expectedChar) {
+        if(!spans[currentIndex].classList.contains("incorrect")){
+            spans[currentIndex].classList.add("correct");
+        }
+    }else{
+        spans[currentIndex].classList.add("incorrect");
+        mistakesCounter++;
+    }
+
+    currentIndex++;
+    highlightCurrentCharacter(spans);
+
+
+    // Stop the timer
+    if (currentIndex === sampleText.length) {
+      stopTimer();
+      displayTypingSpeed();
+      displayAccuracy();
+    }
+    
   });
 
-  const accuracy = ((correctChars / sampleText.length) * 100).toFixed(2);
-  accuracyDisplay.textContent = accuracy;
-
-  // End the test if the user finishes typing
-  if (typedText.length === sampleText.length) {
-    endTest();
+  /*
+   * Initialize cursor
+   */
+  function initializeCursor() {
+    const spans = textDisplay.querySelectorAll("span");
+    if (spans.length > 0) spans[0].classList.add("current");
   }
-}
 
-// Start the timer
-function startTimer() {
-  timerInterval = setInterval(() => {
-    const currentTime = new Date();
-    const timeElapsed = Math.floor((currentTime - startTime) / 1000);
-    timerDisplay.textContent = timeElapsed;
-  }, 1000);
-}
+  /*
+   * To highlight the current character
+   */
+  function highlightCurrentCharacter(spans) {
+    spans.forEach((span) => span.classList.remove("current"));
 
-// End the test and calculate results
-function endTest() {
-  clearInterval(timerInterval);
-  endTime = new Date();
-  const timeTaken = (endTime - startTime) / 1000; // in seconds
-  const wordsTyped = userInput.value.split(' ').length;
-  const speed = Math.floor((wordsTyped / timeTaken) * 60); // words per minute
-  speedDisplay.textContent = speed;
-}
+    if (currentIndex < spans.length)
+      spans[currentIndex].classList.add("current");
+  }
 
-// Reset the test when the textarea is cleared
-userInput.addEventListener('input', () => {
-  if (userInput.value === '') {
-    resetTest();
+  /*
+   * Start Timer
+   */
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      const currentTime = new Date();
+      const elapsedTime = currentTime - startTime;
+      const elapsedTimeInSecs = Math.floor(elapsedTime / 1000);
+      timerDisplay.textContent = elapsedTimeInSecs;
+    }, 1000);
+  }
+
+  /*
+   * Stop Timer
+   */
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  /*
+   * Display typing speed
+   */
+  function displayTypingSpeed() {
+    if (!startTime) return;
+
+    const wordsTyped = sampleText.split(" ").length;
+    let timeInMinutes = (new Date() - startTime) / 1000 / 60;
+
+    // Calculate words per minute
+    const wpm = Math.floor(wordsTyped / timeInMinutes);
+    speedDisplay.textContent = wpm;
+  }
+
+  /*
+   * Display accuracy
+   */
+  function displayAccuracy() {
+    const totalChars = sampleText.length;
+
+    const accuracy = ((totalChars - mistakesCounter) / totalChars * 100).toFixed(2);
+    accuracyDisplay.textContent = accuracy;
   }
 });
-
-// Reset the test
-function resetTest() {
-  userInput.value = '';
-  timerDisplay.textContent = '0';
-  speedDisplay.textContent = '0';
-  accuracyDisplay.textContent = '0';
-  startTime = null;
-  clearInterval(timerInterval);
-}
