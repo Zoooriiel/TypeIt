@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
-  color: #333;
+  color: #33333369;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,12 +18,11 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Text Display */
 #text-display {
-  font-size: 1.5rem;
+  font-size: 3rem;
   line-height: 2;
   text-align: center;
-  color: #333;
+  color: #33333361;
   margin: 20px 0;
   max-width: 800px;
   padding: 0 20px;
@@ -50,16 +49,19 @@ h1 {
 
 /* Cursor and Highlight Styles */
 .current {
-  border-left: 2px solid #2c3e50;
+  border-left: 3px solid #000000;
   animation: blink 0.7s infinite;
 }
 
 .correct {
-  color: #27ae60; /* Green for correct characters */
+  color: #000000db;
 }
 
 .incorrect {
-  color: #e74c3c; /* Red for incorrect characters */
+  background-color: rgba(255, 0, 0, 0.359);
+  color: #db2612;
+  text-decoration: line-through;
+
 }
 
 /* Blinking Cursor Animation */
@@ -68,6 +70,6 @@ h1 {
     border-left-color: transparent;
   }
   50% {
-    border-left-color: #2c3e50;
+    border-left-color: #000102ab;
   }
 }
