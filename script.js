@@ -1,11 +1,11 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   let startTime, timerInterval;
   const timerDisplay = document.getElementById("timer");
   const speedDisplay = document.getElementById("speed");
   const accuracyDisplay = document.getElementById("accuracy");
   const textDisplay = document.getElementById("text-display");
-  const sampleText =
-    "Peter piper bit a pan of pickled pepper and the quick brown fox jumps over the moon.";
+
+  let sampleText = await getWords();
 
   textDisplay.innerHTML = sampleText
     .split("")
@@ -48,17 +48,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Typed key and expected character comparison
     if (typedKey === expectedChar) {
-        if(!spans[currentIndex].classList.contains("incorrect")){
-            spans[currentIndex].classList.add("correct");
-        }
-    }else{
-        spans[currentIndex].classList.add("incorrect");
-        mistakesCounter++;
+      if (!spans[currentIndex].classList.contains("incorrect")) {
+        spans[currentIndex].classList.add("correct");
+      }
+    } else {
+      spans[currentIndex].classList.add("incorrect");
+      mistakesCounter++;
     }
 
     currentIndex++;
     highlightCurrentCharacter(spans);
-
 
     // Stop the timer
     if (currentIndex === sampleText.length) {
@@ -66,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
       displayTypingSpeed();
       displayAccuracy();
     }
-    
   });
 
   /*
@@ -126,7 +124,26 @@ document.addEventListener("DOMContentLoaded", function () {
   function displayAccuracy() {
     const totalChars = sampleText.length;
 
-    const accuracy = ((totalChars - mistakesCounter) / totalChars * 100).toFixed(2);
+    const accuracy = (
+      ((totalChars - mistakesCounter) / totalChars) *
+      100
+    ).toFixed(2);
     accuracyDisplay.textContent = accuracy;
+  }
+
+  /*
+   * Random words API
+   */
+  async function getWords() {
+    try {
+      const response = await fetch(
+        "https://random-word-api.herokuapp.com/word?number=30&length=5"
+      );
+      const words = await response.json();
+      return words.join(" ");
+    } catch (error) {
+      console.error("Error fetching words:", error);
+      return "Peter piper bit a pan of pickled pepper and the quick brown fox jumps over the moon.";
+    }
   }
 });
