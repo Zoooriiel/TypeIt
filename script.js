@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   let currentIndex = 0;
   let mistakesCounter = 0;
   let isGameActive = false;
+  let currentDifficulty = "easy";
 
   // Initialize game
   textDisplay.innerHTML = sampleText
@@ -19,8 +20,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     .map((char) => `<span>${char}</span>`)
     .join("");
   initializeCursor();
+  highlightCurrentDifficulty();
 
-  // Event listeners
+  // All Event listeners
   document.addEventListener("keydown", handleKeydown);
   retryButton.addEventListener("click", resetGame);
   changeDifficultyButton.addEventListener("click", toggleDifficultyOptions);
@@ -28,15 +30,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     button.addEventListener("click", handleDifficultyChange);
   });
 
-  // Functions
+  
+  /*
+  * Starts when user presses a key
+  */
   function handleKeydown(event) {
-    if (!isGameActive) return;
 
-    if (!startTime) {
+    if (!isGameActive) {
+      isGameActive = true;
       startTime = new Date();
       startTimer();
     }
 
+    // Ignore all other keys other than Backspace
     if (event.key.length > 1 && event.key !== "Backspace") return;
 
     const spans = textDisplay.querySelectorAll("span");
@@ -45,18 +51,17 @@ document.addEventListener("DOMContentLoaded", async function () {
       return;
     }
 
+    // Prevent overflow
     if (currentIndex >= sampleText.length) return;
 
     const typedKey = event.key;
     const expectedChar = sampleText[currentIndex];
 
     if (typedKey === expectedChar) {
-      if (!spans[currentIndex].classList.contains("incorrect")) {
-        spans[currentIndex].classList.add("correct");
-      }
+      spans[currentIndex].classList.add("correct");
     } else {
       spans[currentIndex].classList.add("incorrect");
-      mistakesCounter++;
+      mistakesCounter++; // Permanently log mistakes
     }
 
     currentIndex++;
@@ -69,11 +74,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
+  /*
+  * When backspace is pressed
+  */
   function handleBackspace(spans) {
     if (currentIndex > 0) {
-      if (spans[currentIndex - 1].classList.contains("incorrect")) {
-        mistakesCounter--; // Decrement mistakesCounter if correcting an incorrect character
-      }
       spans[currentIndex].classList.remove("current");
       currentIndex--;
       spans[currentIndex].classList.remove("correct", "incorrect");
@@ -81,16 +86,28 @@ document.addEventListener("DOMContentLoaded", async function () {
     highlightCurrentCharacter(spans);
   }
 
+
+  /*
+  * Set up the cursor
+  */
   function initializeCursor() {
     const spans = textDisplay.querySelectorAll("span");
     if (spans.length > 0) spans[0].classList.add("current");
   }
 
+
+  /*
+  * Highlight current cursor
+  */
   function highlightCurrentCharacter(spans) {
     spans.forEach((span) => span.classList.remove("current"));
     if (currentIndex < spans.length) spans[currentIndex].classList.add("current");
   }
 
+
+  /*
+  * Start the timer
+  */
   function startTimer() {
     timerInterval = setInterval(() => {
       const elapsedTime = new Date() - startTime;
@@ -99,10 +116,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     }, 1000);
   }
 
+
+  /*
+  * Stop the timer
+  */
   function stopTimer() {
     clearInterval(timerInterval);
   }
 
+
+  /*
+  * Display typing speed
+  */
   function displayTypingSpeed() {
     if (!startTime) return;
     const wordsTyped = sampleText.split(" ").length;
@@ -111,6 +136,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     speedDisplay.textContent = wpm;
   }
 
+
+  /*
+  * Display accuracy
+  */
   function displayAccuracy() {
     const totalChars = sampleText.length;
     if (totalChars === 0) {
@@ -121,6 +150,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     accuracyDisplay.textContent = accuracy;
   }
 
+
+  /*
+  * Random words API
+  */
   async function getWords(difficulty = "easy") {
     try {
       let wordLength, wordCount;
@@ -153,6 +186,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
+
+  /*
+  * Reset game
+  */
   async function resetGame(difficulty = "easy") {
     isGameActive = false;
     stopTimer();
@@ -177,13 +214,41 @@ document.addEventListener("DOMContentLoaded", async function () {
     initializeCursor();
   }
 
+
+  /*
+  * Show or hide difficulty options dropdown menu
+  */
   function toggleDifficultyOptions() {
     difficultyOptions.classList.toggle("active");
   }
 
+
+  /*
+  * Change difficulty
+  */
   function handleDifficultyChange(e) {
     const selectedDifficulty = e.target.getAttribute("data-difficulty");
+    currentDifficulty = selectedDifficulty;
     resetGame(selectedDifficulty);
     difficultyOptions.classList.remove("active");
+    highlightCurrentDifficulty();
+  }
+
+
+  /*
+  * Highlight current difficulty level background
+  */
+  function highlightCurrentDifficulty() {
+
+    document.querySelectorAll("#difficulty-options button").forEach((button) => {
+      button.classList.remove("active-difficulty");
+    });
+
+    const currentDifficultyButton = document.querySelector(
+      `#difficulty-options button[data-difficulty="${currentDifficulty}"]`
+    );
+    if (currentDifficultyButton) {
+      currentDifficultyButton.classList.add("active-difficulty");
+    }
   }
 });
