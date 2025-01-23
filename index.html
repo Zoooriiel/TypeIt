@@ -17,11 +17,16 @@
     <p>Accuracy: <span id="accuracy">0</span>%</p>
   </div>
 
-  <!-- Retry and Change Difficulty buttons -->
   <div id="controls">
     <button id="retry-button">> Retry</button>
-    <button id="change-difficulty-button">> Change Difficulty</button>
+    <button id="change-difficulty"><span class="caret">></span> Change Difficulty </button>
+    <div id="difficulty-options">
+      <button data-difficulty="easy">Easy</button>
+      <button data-difficulty="medium">Medium</button>
+      <button data-difficulty="hard">Hard</button>
+    </div>
   </div>
+  
 
   <!-- Script -->
   <script src="script.js"></script>

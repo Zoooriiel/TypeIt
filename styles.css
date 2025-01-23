@@ -1,5 +1,5 @@
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
@@ -12,7 +12,7 @@ body {
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   font-weight: 600;
   color: #000000;
   margin-bottom: 20px;
@@ -20,12 +20,14 @@ h1 {
 
 #text-display {
   font-size: 2.5rem;
-  line-height: 2;
-  text-align: center;
+  line-height: 1.8;
+  text-align: center; 
+  text-justify: inter-word;
   color: #33333361;
   margin: 20px 0;
-  max-width: 1000px;
+  max-width: 1500px;
   padding: 0 20px;
+  white-space: pre-wrap;
 }
 
 /* Stats Container */
@@ -61,12 +63,12 @@ h1 {
   background-color: rgba(255, 0, 0, 0.359);
   color: #db2612;
   text-decoration: line-through;
-
 }
 
 /* Blinking Cursor Animation */
 @keyframes blink {
-  0%, 100% {
+  0%,
+  100% {
     border-left-color: transparent;
   }
   50% {
@@ -74,22 +76,20 @@ h1 {
   }
 }
 
-/* Button Container */
 #controls {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 30px;
+  position: relative;
+  display: inline-block;
+  margin-top: 20px;
+  text-align: center;
 }
 
-/* Button Styles */
 #controls button {
   padding: 12px 24px;
   margin-top: 10px;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 600;
   background-color: #f4f4f9;
-  color: #33333398;
+  color: #333;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -97,7 +97,7 @@ h1 {
 }
 
 #controls button:hover {
-  color: #000000;
+  color: #000;
   transform: translateY(-5px);
 }
 
@@ -105,10 +105,45 @@ h1 {
   transform: translateY(0);
 }
 
-/* Difficulty Prompt */
-#difficulty-prompt {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #555;
+#difficulty-options {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
   margin-top: 10px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+#difficulty-options.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+#difficulty-options button {
+  font-size: 1.5rem;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f4f4f9;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#difficulty-options button:hover {
+  background-color: #ddd;
+  color: #000;
+}
+
+/* Caret style */
+#change-difficulty .caret {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+#change-difficulty .caret.down {
+  transform: rotate(90deg);
 }
