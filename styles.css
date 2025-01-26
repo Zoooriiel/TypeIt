@@ -106,6 +106,10 @@ h1 {
   transform: translateY(0);
 }
 
+#retry-button{
+  border: none;
+}
+
 #difficulty-options {
   display: flex;
   gap: 10px;

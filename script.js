@@ -204,6 +204,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     currentIndex = 0;
     mistakesCounter = 0;
 
+    // Clear focus from retry button
+    retryButton.blur();
+
     sampleText = await getWords(currentDifficulty);
     textDisplay.innerHTML = sampleText
       .split("")
