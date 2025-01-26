@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let sampleText = await getWords();
   let startTime, timerInterval;
-  let currentIndex = 0;
+  let currentIndex = 0;                 // tracks the position of the current character the user is typing
   let mistakesCounter = 0;
-  let isGameActive = false;
   let currentDifficulty = "easy";
+
 
   // Initialize game
   textDisplay.innerHTML = sampleText
@@ -22,7 +22,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   initializeCursor();
   highlightCurrentDifficulty();
 
-  // All Event listeners
+
+  // Event listeners
   document.addEventListener("keydown", handleKeydown);
   retryButton.addEventListener("click", resetGame);
   changeDifficultyButton.addEventListener("click", toggleDifficultyOptions);
@@ -30,19 +31,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     button.addEventListener("click", handleDifficultyChange);
   });
 
-  
+
+  // Functions
+
   /*
-  * Starts when user presses a key
+  * Upon key press
   */
   function handleKeydown(event) {
-
-    if (!isGameActive) {
-      isGameActive = true;
+    if (event.key === " ") event.preventDefault();
+    // Start the timer on the first keypress
+    if (!startTime) {
       startTime = new Date();
       startTimer();
     }
 
-    // Ignore all other keys other than Backspace
+    // Ignore all keys except Backspace
     if (event.key.length > 1 && event.key !== "Backspace") return;
 
     const spans = textDisplay.querySelectorAll("span");
@@ -61,12 +64,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       spans[currentIndex].classList.add("correct");
     } else {
       spans[currentIndex].classList.add("incorrect");
-      mistakesCounter++; // Permanently log mistakes
+      mistakesCounter++;
     }
 
     currentIndex++;
     highlightCurrentCharacter(spans);
 
+    // Stop the timer when all characters are typed
     if (currentIndex === sampleText.length) {
       stopTimer();
       displayTypingSpeed();
@@ -74,8 +78,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 
+
   /*
-  * When backspace is pressed
+  * Backspace Handler (Removes correct and incorrect text styling)
   */
   function handleBackspace(spans) {
     if (currentIndex > 0) {
@@ -88,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /*
-  * Set up the cursor
+  * Initialize cursor (Place it at the start)
   */
   function initializeCursor() {
     const spans = textDisplay.querySelectorAll("span");
@@ -97,16 +102,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /*
-  * Highlight current cursor
+  * Place cursor on the current letter
   */
   function highlightCurrentCharacter(spans) {
     spans.forEach((span) => span.classList.remove("current"));
     if (currentIndex < spans.length) spans[currentIndex].classList.add("current");
   }
 
-
+  
   /*
-  * Start the timer
+  * Start Timer
   */
   function startTimer() {
     timerInterval = setInterval(() => {
@@ -118,7 +123,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /*
-  * Stop the timer
+  * Stop Timer
   */
   function stopTimer() {
     clearInterval(timerInterval);
@@ -126,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /*
-  * Display typing speed
+  * Display typing speed (WPM)
   */
   function displayTypingSpeed() {
     if (!startTime) return;
@@ -152,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /*
-  * Random words API
+  * API random word fetcher
   */
   async function getWords(difficulty = "easy") {
     try {
@@ -188,10 +193,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /*
-  * Reset game
+  * Reset Game
   */
-  async function resetGame(difficulty = "easy") {
-    isGameActive = false;
+  async function resetGame() {
     stopTimer();
     timerDisplay.textContent = "0";
     speedDisplay.textContent = "0";
@@ -200,7 +204,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     currentIndex = 0;
     mistakesCounter = 0;
 
-    sampleText = await getWords(difficulty);
+    sampleText = await getWords(currentDifficulty);
     textDisplay.innerHTML = sampleText
       .split("")
       .map((char) => `<span>${char}</span>`)
@@ -211,12 +215,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       span.classList.remove("correct", "incorrect", "current");
     });
 
-    initializeCursor();
+    initializeCursor(); // Reset the cursor to the first character
   }
 
 
   /*
-  * Show or hide difficulty options dropdown menu
+  *
   */
   function toggleDifficultyOptions() {
     difficultyOptions.classList.toggle("active");
@@ -224,22 +228,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   /*
-  * Change difficulty
+  *
   */
   function handleDifficultyChange(e) {
+    e.target.blur();
     const selectedDifficulty = e.target.getAttribute("data-difficulty");
-    currentDifficulty = selectedDifficulty;
-    resetGame(selectedDifficulty);
-    difficultyOptions.classList.remove("active");
-    highlightCurrentDifficulty();
+    currentDifficulty = selectedDifficulty; 
+    resetGame(); 
+    difficultyOptions.classList.remove("active"); 
+    highlightCurrentDifficulty(); 
   }
 
 
   /*
-  * Highlight current difficulty level background
+  *
   */
   function highlightCurrentDifficulty() {
-
     document.querySelectorAll("#difficulty-options button").forEach((button) => {
       button.classList.remove("active-difficulty");
     });
